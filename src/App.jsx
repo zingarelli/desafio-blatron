@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import getResults from './utils/DataExtractor';
+import XYChart from './components/XYChart';
 
+// we're reading the file locally
+const fileSrc = '/data/results.txt';
 
 function App() {
-  // we're reading the file locally
-  const fileSrc = '/data/results.txt'
   const [results, setResults] = useState(null);
 
   // get data from file when the app loads
@@ -28,6 +29,7 @@ function App() {
   return (
     <>
       <h1>Desafio: Desenvolvimento de Gráfico Interativo</h1>
+      <XYChart />
     </>
   )
 }
