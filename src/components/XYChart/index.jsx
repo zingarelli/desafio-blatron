@@ -63,7 +63,6 @@ export default function XYChart({ data }) {
                 label='Axis X'
                 top={height-margin.bottom}
                 numTicks={5}
-                tickFormat={format('.2f')}
             />
 
             <AxisLeft 
@@ -71,7 +70,6 @@ export default function XYChart({ data }) {
                 label='Axis Y'
                 left={margin.left}
                 numTicks={5}
-                tickFormat={format('.2f')}
             />
             
             {data.map((point, idx) => (
