@@ -1,0 +1,39 @@
+.title {
+  font-size: 1.8em;
+  text-align: center;
+}
+
+.chart {
+  display: flex;
+  column-gap: 2em;
+}
+
+.chart_options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1em;
+  padding: .7em 1em;
+  margin-bottom: 2em ;
+}
+
+.chart_area {
+  width: 630px;
+  height: 500px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer {
+  text-align: center;
+  margin: 1em auto;
+  padding-top: .5em;
+  border-top: 1px solid #213547;
+}

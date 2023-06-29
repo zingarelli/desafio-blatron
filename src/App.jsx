@@ -1,5 +1,5 @@
+import styles from './App.module.css';
 import { useEffect, useState } from 'react';
-import './App.css';
 import { getColumns, getValuesFromColumn } from './utils/DataExtractor';
 import XYChart from './components/XYChart';
 import Select from './components/Select';
@@ -54,10 +54,15 @@ function App() {
       // get an array of values
       const values = await getValuesFromColumn(column, fileSrc);
 
-      // update values of the given axis
-      axis.toLowerCase() === 'x'
-        ? setDataX(values)
-        : setDataY(values);
+      // update values and the name of the given axis
+      if (axis.toLowerCase() === 'x') {
+        setDataX(values);
+        setChartOptions({...chartOptions, 'xLabel': column});
+      }
+      else {
+        setDataY(values);
+        setChartOptions({...chartOptions, 'yLabel': column});
+      }
     }
     else {
       axis.toLowerCase() === 'x'
@@ -69,7 +74,7 @@ function App() {
   // change the radius or color of the circle representing a data point on the chart
   function updateChartOptions(property, value) {
     setChartOptions(prevState => {
-      return {...prevState, [property]: value}
+      return { ...prevState, [property]: value }
     })
   }
 
@@ -82,36 +87,45 @@ function App() {
 
   return (
     <>
-      <h1>Desafio: Desenvolvimento de Gráfico Interativo</h1>
-      <Select
-        id='x_axis'
-        label='Dados Eixo X'
-        options={columns}
-        onChange={e => changeAxisData(e.target.value, 'x')}
-      />
-      <Select
-        id='y_axis'
-        label='Dados Eixo Y'
-        options={columns}
-        onChange={e => changeAxisData(e.target.value, 'y')}
-      />
-      {coordinatesAvailable && (
-        <>
-          <XYChart data={coordinates} options={chartOptions} />
-          <Select
-            id='marker_radius'
-            label='Tamanho do Ponto'
-            options={[2, 3, 4, 5]}
-            onChange={e => updateChartOptions('radius', e.target.value)}
-          />
-          <Select
-            id='marker_color'
-            label='Cor do Ponto'
-            options={['azul', 'preto', 'vermelho', 'verde']}
-            onChange={e => updateChartOptions('color', e.target.value)}
-          />
-        </>
-      )}
+      <h1 className={styles.title}>Desafio: Desenvolvimento de Gráfico Interativo</h1>
+      <div className={styles.chart}>
+        <aside className={styles.chart_options}>
+          <fieldset className={styles.fieldset}>
+            <legend>Dados do gráfico</legend>
+            <Select
+              id='x_axis'
+              label='Eixo X'
+              options={columns}
+              onChange={e => changeAxisData(e.target.value, 'x')}
+            />
+            <Select
+              id='y_axis'
+              label='Eixo Y'
+              options={columns}
+              onChange={e => changeAxisData(e.target.value, 'y')}
+            />
+          </fieldset>
+          <fieldset disabled={!coordinatesAvailable} className={styles.fieldset} >
+            <legend>Estilos para o gráfico</legend>
+            <Select
+              id='marker_radius'
+              label='Tamanho do Ponto'
+              options={[2, 3, 4, 5]}
+              onChange={e => updateChartOptions('radius', e.target.value)}
+            />
+            <Select
+              id='marker_color'
+              label='Cor do Ponto'
+              options={['Azul', 'Preto', 'Vermelho', 'Verde']}
+              onChange={e => updateChartOptions('color', e.target.value)}
+            />
+          </fieldset>
+        </aside>
+        <main className={styles.chart_area}>
+          {coordinatesAvailable && <XYChart data={coordinates} options={chartOptions} />}
+        </main>
+      </div>
+      <footer className={styles.footer}>Desafio Blatron | Matheus Ricardo Uihara Zingarelli</footer>
     </>
   )
 }

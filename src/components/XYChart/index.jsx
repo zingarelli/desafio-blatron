@@ -73,14 +73,14 @@ export default function XYChart({ data, options }) {
             {/* X and Y Axes */}
             <AxisBottom 
                 scale={scaleX}
-                label='Axis X'
+                label={options.xLabel || 'Eixo X'}
                 top={height-margin.bottom}
                 numTicks={5}                
             />
 
             <AxisLeft 
                 scale={scaleY}
-                label='Axis Y'
+                label={options.yLabel || 'Eixo Y'}
                 left={margin.left}
                 numTicks={5}
             />
@@ -88,12 +88,13 @@ export default function XYChart({ data, options }) {
             {data.map((point, idx) => (
                 // cx and cy are the coordinates
                 // r is the radius of the circle
+                // fill is inner color of the circle
                 <Circle 
                     key={idx}
                     cx={scaleX(point.x)}
                     cy={scaleY(point.y)}
                     r={options.radius || 2}
-                    fill={colorOptions[options.color] || 'black'}
+                    fill={colorOptions[options.color?.toLowerCase()] || 'black'}
                 />
             ))}
         </svg>
