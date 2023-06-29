@@ -1,6 +1,20 @@
-export default async function getResults(url) {
+// Fetch text data (from a file, or API endpoint)
+async function fetchTxtData(url) {
     try{
-        const data = await fetchDataFromFile(url);
+        const resp = await fetch(url);
+        const data = await resp.text();
+        return data;
+    }
+    catch (err) {
+        throw new Error(`Error fetching data: ${err}`);
+    }
+}
+
+// extract all the results and return them in an object in the format:
+// {nameOfTheColumn : [...values]}
+export async function getAllResults(url) {
+    try{
+        const data = await fetchTxtData(url);
         
         // first line in the file contains the name for each column (headers)
         const columns = data.split('\n')[0].trim().split('\t');
@@ -22,7 +36,8 @@ export default async function getResults(url) {
                 line.trim().split('\t').map((value, idx) => {
                     // get the current column
                     const header = columns[idx];
-                    results[header].push(value);
+                    // convert to float before adding to the array
+                    results[header].push(parseFloat(value));
                 })
             }
 
@@ -35,13 +50,28 @@ export default async function getResults(url) {
     }
 }
 
-async function fetchDataFromFile(url) {
-    try{
-        const resp = await fetch(url);
-        const data = await resp.text();
-        return data;
+// return all the columns (headers) in an array
+// columns are separated by tabs (\t)
+export async function getColumns(url) {
+    try {
+        const data = await fetchTxtData(url);
+        
+        // first line in the file contains the name for each column (headers)
+        // using trim() to remove any white spaces from the last column
+        return data.split('\n')[0].trim().split('\t');        
+    } 
+    catch (err) {
+        console.log(err);
+    }
+}
+
+// return an array with the values of a single column
+export async function getValuesFromColumn(column, url) {
+    try {
+        const data = await getAllResults(url);
+        return data[column];
     }
     catch (err) {
-        throw new Error(`Error fetching data: ${err}`);
+        console.log(err);
     }
 }
