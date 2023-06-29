@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { getColumns, getValuesFromColumn } from './utils/DataExtractor';
 import XYChart from './components/XYChart';
+import Select from './components/Select';
 
 // we're reading the file locally
 const fileSrc = '/data/results.txt';
@@ -12,6 +13,8 @@ function App() {
   const [dataY, setDataY] = useState([]);
   // coordinates is an array of objects [{x: value, y: value}, ...]
   const [coordinates, setCoordinates] = useState([]);
+  // options for the marker (radius and color)
+  const [chartOptions, setChartOptions] = useState({});
 
   // get columns from file when the app loads
   useEffect(() => {
@@ -32,12 +35,12 @@ function App() {
   useEffect(() => {
     function updateCoordinates() {
       const newCoordinates = [];
-  
+
       // iterate dataX and dataY to create new coordinate objects
       for (let i = 0; i < dataX.length; i++) {
-        newCoordinates.push({x: dataX[i], y: dataY[i]})      
+        newCoordinates.push({ x: dataX[i], y: dataY[i] })
       }
-  
+
       setCoordinates(newCoordinates);
     }
 
@@ -45,9 +48,7 @@ function App() {
   }, [dataX, dataY])
 
   // get data for the selected column
-  async function changeAxisData(e, axis) {
-    const column = e.target.value;
-
+  async function changeAxisData(column, axis) {
     // check if it's not the default (empty) select option
     if (column) {
       // get an array of values
@@ -65,33 +66,52 @@ function App() {
     }
   }
 
-  // check if there's at least one coordinate in the list
-  function isThereCoordinates() {
-    return (
-      Object.entries(coordinates).length > 0
-      && coordinates[0].x !== undefined
-      && coordinates[0].y !== undefined
-    );
+  // change the radius or color of the circle representing a data point on the chart
+  function updateChartOptions(property, value) {
+    setChartOptions(prevState => {
+      return {...prevState, [property]: value}
+    })
   }
+
+  // check if there's at least one coordinate in the list, in order to plot the chart
+  const coordinatesAvailable = (
+    Object.entries(coordinates).length > 0
+    && coordinates[0].x !== undefined
+    && coordinates[0].y !== undefined
+  );
 
   return (
     <>
       <h1>Desafio: Desenvolvimento de Gráfico Interativo</h1>
-      <label htmlFor="x-axis">Dados Eixo X</label>
-      <select id="x-axis" onChange={e => changeAxisData(e, 'x')}>
-        <option value="">Selecione uma opção</option>
-        {columns.map(column => (
-          <option value={column} key={column}>{column}</option>
-        ))}
-      </select>
-      <label htmlFor="y-axis">Dados Eixo Y</label>
-      <select id="y-axis" onChange={e => changeAxisData(e, 'y')}>
-        <option value="">Selecione uma opção</option>
-        {columns.map(column => (
-          <option value={column} key={column}>{column}</option>
-        ))}
-      </select>
-      {isThereCoordinates() && <XYChart data={coordinates} />}
+      <Select
+        id='x_axis'
+        label='Dados Eixo X'
+        options={columns}
+        onChange={e => changeAxisData(e.target.value, 'x')}
+      />
+      <Select
+        id='y_axis'
+        label='Dados Eixo Y'
+        options={columns}
+        onChange={e => changeAxisData(e.target.value, 'y')}
+      />
+      {coordinatesAvailable && (
+        <>
+          <XYChart data={coordinates} options={chartOptions} />
+          <Select
+            id='marker_radius'
+            label='Tamanho do Ponto'
+            options={[2, 3, 4, 5]}
+            onChange={e => updateChartOptions('radius', e.target.value)}
+          />
+          <Select
+            id='marker_color'
+            label='Cor do Ponto'
+            options={['azul', 'preto', 'vermelho', 'verde']}
+            onChange={e => updateChartOptions('color', e.target.value)}
+          />
+        </>
+      )}
     </>
   )
 }

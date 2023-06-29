@@ -2,7 +2,6 @@ import { Circle } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
 import { extent } from 'd3-array';
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { format } from 'd3-format';
 
 // hardcoded example
 // const data = [
@@ -23,19 +22,33 @@ import { format } from 'd3-format';
 //     { x: 3.21013e-05, y: 9.56941e-05 },
 // ];
 
-export default function XYChart({ data }) {
+// helper to pick color based on its portuguese name
+const colorOptions = {
+    'azul': 'blue',
+    'preto': 'black', 
+    'vermelho': 'red', 
+    'verde': 'green'
+}
+
+/**
+ * Plot a XY Chart with points provided in data. 
+ * @param {Object[]} data - an array of points. A point is an object with 
+ * properties x and y represeting the coordinates. 
+ * Example: data = [{x: value, y: value}, ...] 
+ * @param {Object} options - style options for the marker (color and radius)
+ */
+export default function XYChart({ data, options }) {    
+    // chart dimensions
+    const width =  600;
+    const height = 450;
+
+    // plot area dimensions (smaller than chart, to make room for axes X and Y)
     const margin = {
         top: 30, 
         right: 60,
         bottom: 40, 
         left: 60
     }
-
-    // chart dimensions
-    const width =  600;
-    const height = 450;
-
-    // plot area dimensions (smaller than chart, to make room for axes X and Y)
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
@@ -62,7 +75,7 @@ export default function XYChart({ data }) {
                 scale={scaleX}
                 label='Axis X'
                 top={height-margin.bottom}
-                numTicks={5}
+                numTicks={5}                
             />
 
             <AxisLeft 
@@ -79,7 +92,8 @@ export default function XYChart({ data }) {
                     key={idx}
                     cx={scaleX(point.x)}
                     cy={scaleY(point.y)}
-                    r={2}
+                    r={options.radius || 2}
+                    fill={colorOptions[options.color] || 'black'}
                 />
             ))}
         </svg>
